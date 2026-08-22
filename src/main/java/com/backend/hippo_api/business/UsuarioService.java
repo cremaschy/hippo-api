@@ -1,5 +1,8 @@
 package com.backend.hippo_api.business;
 
+import com.backend.hippo_api.business.converter.UsuarioConverter;
+import com.backend.hippo_api.business.dtos.in.UsuarioCadastroDTORequest;
+import com.backend.hippo_api.business.dtos.out.UsuarioCadastroDTOResponse;
 import com.backend.hippo_api.infrastructure.entity.Usuario;
 import com.backend.hippo_api.infrastructure.exceptions.ConflictException;
 import com.backend.hippo_api.infrastructure.repository.UsuarioRepository;
@@ -16,32 +19,31 @@ import java.time.LocalDateTime;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
 
-    public Usuario cadastrarUsuario(Usuario usuario) {
-        try {
-            emailExiste(usuario.getEmail());
+    public UsuarioCadastroDTOResponse cadastrarUsuario(UsuarioCadastroDTORequest usuarioDTO) {
+        // Verficiar se o Email já existe no Banco de Dados
+        emailExiste(usuarioDTO.getEmail());
 
-            usuario.setSenha(passwordEncoder.encode(usuario.getPassword()));
-            usuario.setDataCadastro(LocalDateTime.now());
+        // Transformar o UsuarioDTO em Usuario
+        Usuario usuario = usuarioConverter.converterParaUsuario(usuarioDTO);
 
-            return usuarioRepository.save(usuario);
-        }
-        catch (ConflictException e) {
-            throw new ConflictException("Erro: Email " + usuario.getEmail() + " já existe!", e.getCause());
-        }
+        // Criptografar a Senha e setar a Data do Cadastro
+        usuario.setSenha(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setDataCadastro(LocalDateTime.now());
+
+        // Salvar no Banco de Dados
+        return usuarioConverter.converterParaUsuarioDTO(
+                usuarioRepository.save(usuario)
+        );
     }
 
     private void emailExiste(String email) {
-        try {
-            boolean emailExiste = verificarSeEmailExiste(email);
+        boolean emailExiste = verificarSeEmailExiste(email);
 
-            if (emailExiste) {
-                throw new ConflictException("Erro: Email " + email + " já existe!");
-            }
-        }
-        catch (ConflictException e) {
-            throw new ConflictException("Erro: Email " + email + " já existe!", e.getCause());
+        if (emailExiste) {
+            throw new ConflictException("Erro: Email " + email + " já existe!");
         }
     }
 

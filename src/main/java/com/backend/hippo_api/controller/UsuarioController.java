@@ -1,8 +1,9 @@
 package com.backend.hippo_api.controller;
 
 import com.backend.hippo_api.business.UsuarioService;
-import com.backend.hippo_api.controller.dtos.UsuarioDTO;
-import com.backend.hippo_api.infrastructure.entity.Usuario;
+import com.backend.hippo_api.business.dtos.in.LoginDTORequest;
+import com.backend.hippo_api.business.dtos.in.UsuarioCadastroDTORequest;
+import com.backend.hippo_api.business.dtos.out.UsuarioCadastroDTOResponse;
 import com.backend.hippo_api.infrastructure.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -26,14 +27,14 @@ public class UsuarioController {
     private final JwtUtil jwtUtil;
 
     @PostMapping
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioService.cadastrarUsuario(usuario));
+    public ResponseEntity<UsuarioCadastroDTOResponse> cadastrarUsuario(@RequestBody UsuarioCadastroDTORequest usuarioDTO) {
+        return ResponseEntity.ok(usuarioService.cadastrarUsuario(usuarioDTO));
     }
 
     @PostMapping("/login")
-    public String loginUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+    public String loginUsuario(@RequestBody LoginDTORequest loginDTORequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha())
+                new UsernamePasswordAuthenticationToken(loginDTORequest.getEmail(), loginDTORequest.getSenha())
         );
         return "Bearer " + jwtUtil.generateToken(authentication.getName());
     }

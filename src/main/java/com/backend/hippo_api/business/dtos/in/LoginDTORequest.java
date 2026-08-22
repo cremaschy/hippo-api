@@ -1,4 +1,4 @@
-package com.backend.hippo_api.controller.dtos;
+package com.backend.hippo_api.business.dtos.in;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioDTO {
+public class LoginDTORequest {
     private String email;
     private String senha;
 }
