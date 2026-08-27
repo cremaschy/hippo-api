@@ -3,6 +3,7 @@ package com.backend.hippo_api.controller;
 import com.backend.hippo_api.business.UsuarioService;
 import com.backend.hippo_api.business.dtos.in.LoginDTORequest;
 import com.backend.hippo_api.business.dtos.in.UsuarioCadastroDTORequest;
+import com.backend.hippo_api.business.dtos.out.UsuarioBuscaDadosDTOResponse;
 import com.backend.hippo_api.business.dtos.out.UsuarioCadastroDTOResponse;
 import com.backend.hippo_api.infrastructure.security.JwtUtil;
 
@@ -12,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -37,5 +35,10 @@ public class UsuarioController {
                 new UsernamePasswordAuthenticationToken(loginDTORequest.getEmail(), loginDTORequest.getSenha())
         );
         return "Bearer " + jwtUtil.generateToken(authentication.getName());
+    }
+
+    @GetMapping
+    public ResponseEntity<UsuarioBuscaDadosDTOResponse> buscarUsuarioPorId(@RequestParam("id") Long id) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
     }
 }

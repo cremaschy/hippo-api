@@ -1,11 +1,12 @@
 package com.backend.hippo_api.controller;
 
 import com.backend.hippo_api.infrastructure.exceptions.ConflictException;
+import com.backend.hippo_api.infrastructure.exceptions.ResourceNotFoundException;
 import com.backend.hippo_api.infrastructure.records.ErrorResponseRecord;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
     // Tratar uma ConflicException
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<String> handleConflictException(ConflictException e) {
+    public ResponseEntity<ErrorResponseRecord> handleConflictException(ConflictException e) {
 
         ErrorResponseRecord erro = new ErrorResponseRecord(
                 HttpStatus.CONFLICT.value(),
@@ -25,14 +26,14 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
+                .body(erro);
     }
 
     // Tratar uma BadCredentialsException
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException e) {
+    public ResponseEntity<ErrorResponseRecord> handleBadCredentialsException(BadCredentialsException e) {
 
-        ErrorResponseRecord error = new ErrorResponseRecord(
+        ErrorResponseRecord erro = new ErrorResponseRecord(
                 HttpStatus.UNAUTHORIZED.value(),
                 "E-mail ou Senha Inválidos",
                 LocalDateTime.now()
@@ -40,6 +41,21 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(e.getMessage());
+                .body(erro);
+    }
+
+    // Tratar uma ResourceNotFoundException
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseRecord> handleResourceNotFoundException(ResourceNotFoundException e) {
+
+        ErrorResponseRecord erro = new ErrorResponseRecord(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(erro);
     }
 }

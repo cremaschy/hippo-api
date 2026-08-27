@@ -2,9 +2,11 @@ package com.backend.hippo_api.business;
 
 import com.backend.hippo_api.business.converter.UsuarioConverter;
 import com.backend.hippo_api.business.dtos.in.UsuarioCadastroDTORequest;
+import com.backend.hippo_api.business.dtos.out.UsuarioBuscaDadosDTOResponse;
 import com.backend.hippo_api.business.dtos.out.UsuarioCadastroDTOResponse;
 import com.backend.hippo_api.infrastructure.entity.Usuario;
 import com.backend.hippo_api.infrastructure.exceptions.ConflictException;
+import com.backend.hippo_api.infrastructure.exceptions.ResourceNotFoundException;
 import com.backend.hippo_api.infrastructure.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -27,14 +29,14 @@ public class UsuarioService {
         emailExiste(usuarioDTO.getEmail());
 
         // Transformar o UsuarioDTO em Usuario
-        Usuario usuario = usuarioConverter.converterParaUsuario(usuarioDTO);
+        Usuario usuario = usuarioConverter.converterParaUsuarioCadastro(usuarioDTO);
 
         // Criptografar a Senha e setar a Data do Cadastro
-        usuario.setSenha(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setDataCadastro(LocalDateTime.now());
 
         // Salvar no Banco de Dados
-        return usuarioConverter.converterParaUsuarioDTO(
+        return usuarioConverter.converterParaUsuarioDTOCadastro(
                 usuarioRepository.save(usuario)
         );
     }
@@ -49,5 +51,13 @@ public class UsuarioService {
 
     private boolean verificarSeEmailExiste(String email) {
         return usuarioRepository.existsByEmail(email);
+    }
+
+    public UsuarioBuscaDadosDTOResponse buscarUsuarioPorId(Long id) {
+        return usuarioConverter.converterParaUsuarioDTOBuscarDados(
+                usuarioRepository.findById(id).orElseThrow(
+                        () -> new ResourceNotFoundException("Erro: Usuário de ID " + id + " não Encontrado!")
+                )
+        );
     }
 }
