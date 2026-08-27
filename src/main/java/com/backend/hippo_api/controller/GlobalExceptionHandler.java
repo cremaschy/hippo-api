@@ -4,7 +4,6 @@ import com.backend.hippo_api.infrastructure.exceptions.ConflictException;
 import com.backend.hippo_api.infrastructure.exceptions.ResourceNotFoundException;
 import com.backend.hippo_api.infrastructure.records.ErrorResponseRecord;
 
-import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
     // Tratar uma ConflicException
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<String> handleConflictException(ConflictException e) {
+    public ResponseEntity<ErrorResponseRecord> handleConflictException(ConflictException e) {
 
         ErrorResponseRecord erro = new ErrorResponseRecord(
                 HttpStatus.CONFLICT.value(),
@@ -27,12 +26,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(e.getMessage());
+                .body(erro);
     }
 
     // Tratar uma BadCredentialsException
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException e) {
+    public ResponseEntity<ErrorResponseRecord> handleBadCredentialsException(BadCredentialsException e) {
 
         ErrorResponseRecord erro = new ErrorResponseRecord(
                 HttpStatus.UNAUTHORIZED.value(),
@@ -42,14 +41,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(e.getMessage());
+                .body(erro);
     }
-
-
 
     // Tratar uma ResourceNotFoundException
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException e) {
+    public ResponseEntity<ErrorResponseRecord> handleResourceNotFoundException(ResourceNotFoundException e) {
 
         ErrorResponseRecord erro = new ErrorResponseRecord(
                 HttpStatus.NOT_FOUND.value(),
@@ -59,6 +56,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                .body(erro);
     }
 }

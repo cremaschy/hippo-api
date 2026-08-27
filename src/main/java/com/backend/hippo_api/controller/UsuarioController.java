@@ -6,7 +6,9 @@ import com.backend.hippo_api.business.dtos.in.UsuarioCadastroDTORequest;
 import com.backend.hippo_api.business.dtos.out.UsuarioBuscaDadosDTOResponse;
 import com.backend.hippo_api.business.dtos.out.UsuarioCadastroDTOResponse;
 import com.backend.hippo_api.infrastructure.security.JwtUtil;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
